@@ -1,9 +1,10 @@
 package com.eleetricz.auditproweb.controller;
 
-import com.eleetricz.auditproweb.model.Document;
+import com.eleetricz.auditproweb.model.DocumentType;
+import com.eleetricz.auditproweb.model.enums.Month;
 import com.eleetricz.auditproweb.service.DocumentService;
 import com.eleetricz.auditproweb.service.EmployeeService;
-import org.springframework.core.io.ByteArrayResource;
+import com.eleetricz.auditproweb.utils.YearProvider;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 @Controller
@@ -34,6 +36,10 @@ public class DocumentController {
     public String listDocuments(@PathVariable Long id, Model model) {
         model.addAttribute("employee", employeeService.findById(id));
         model.addAttribute("documents", documentService.findByEmployee(id));
+        model.addAttribute("months", Month.values());
+        model.addAttribute("documentTypes", DocumentType.values());
+        List<Integer> years = YearProvider.getYears(2020, 2025);
+        model.addAttribute("years", years);
         return "employee";
     }
 
@@ -54,8 +60,6 @@ public class DocumentController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-
-
     }
 
 

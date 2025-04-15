@@ -19,6 +19,43 @@
     <!-- Subtítulo -->
     <h2 class="text-xl font-medium text-gray-700 mb-4">Lista de Arquivos</h2>
 
+    <!-- Formulario para filtrar-->
+    <form method="get" class="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap items-end gap-4">
+        <div class="flex flex-col">
+            <label for="year" class="text-sm font-medium text-gray-700 mb-1">Ano</label>
+            <select id="year" name="year" class="border border-gray-300 rounded px-3 py-2 text-sm">
+                <option th:each="year : ${years}"
+                        th:value="${year}"
+                        th:text="${year}">
+                </option>
+            </select>
+        </div>
+
+        <div class="flex flex-col">
+            <label for="month" class="text-sm font-medium text-gray-700 mb-1">Mês</label>
+            <select id="month" name="month" class="border border-gray-300 rounded px-3 py-2 text-sm">
+                <option th:each="month : ${months}"
+                        th:value="${month.number}"
+                        th:text="${month.name}"
+                >
+
+                </option>
+            </select>
+        </div>
+        <div class="flex flex-col">
+            <label for="documentType" class="text-sm font-medium text-gray-700 mb-1">Tipo</label>
+            <select id="documentType" name="documentType" class="border border-gray-300 rounded px-3 py-2 text-sm">
+                <option th:each="documentType : ${documentTypes}"
+                        th:value="${documentType}"
+                        th:text="${documentType}">
+                </option>
+            </select>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-600">
+            Filtrar
+        </button>
+    </form>
+
     <!-- Lista de Arquivos -->
     <div class="bg-white rounded-lg shadow-lg">
         <ul class="divide-y divide-gray-200">
@@ -27,7 +64,7 @@
                 <span th:text="${document.type + ' ' + document.year + ' ' + (document.month < 10 ? '0' + document.month : document.month)}"
                       class="text-gray-800 text-sm font-medium"></span>
 
-                <!-- Botão de download (sem função, apenas estilo) -->
+                <!-- Botão de download -->
                 <a th:href="@{'/pdf/' + ${document.company.name} + '/' + ${document.employee.name + '_' + document.year + '_' + (document.month < 10 ? '0' + document.month : document.month) + '_' + document.type + '.pdf'}}"
                    target="_blank"
                    class="flex items-center gap-1 text-blue-500 hover:underline text-sm font-medium">
