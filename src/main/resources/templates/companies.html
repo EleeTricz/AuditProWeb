@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Empresas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- Cabeçalho -->
+<div th:replace="fragments/header :: header"></div>
+
+<!-- Conteúdo Principal -->
+<main class="container mx-auto p-6 flex-1">
+    <h1 class="text-3xl font-bold mb-4">Empresas</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div th:each="company : ${companies}" class="bg-white p-4 rounded shadow hover:shadow-lg">
+            <h2 class="text-xl font-semibold" th:text="${company.name}"></h2>
+            <a th:href="@{'/empresas/' + ${company.id} + '/funcionarios'}"
+               class="mt-2 inline-block text-blue-500 hover:underline">Ver funcionários</a>
+        </div>
+    </div>
+</main>
+
+<!-- Rodapé -->
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Application name
+spring.application.name=auditproweb
+
+# PostgreSQL configuration (replace with your actual credentials in the real file)
+spring.datasource.url=jdbc:postgresql://localhost:5432/auditoria_documentos
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
+
+# JPA and Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+
+# Thymeleaf
+spring.thymeleaf.cache=false
+
+# Allow access from other machines in the network
+server.address=0.0.0.0
