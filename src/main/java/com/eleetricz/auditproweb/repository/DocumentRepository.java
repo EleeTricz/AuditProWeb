@@ -18,4 +18,5 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                                             @Param("year") Integer year,
                                             @Param("month") Integer month,
                                             @Param("type")DocumentType type);
+    Long countByEmployeeId(Long employeeId);
 }

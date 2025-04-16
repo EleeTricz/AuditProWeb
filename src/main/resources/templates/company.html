@@ -7,21 +7,30 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 <div th:replace="fragments/header :: header"></div>
+
 <main class="container mx-auto p-6 flex-1">
-    <h1 class="text-3xl font-bold mb-4" th:text="${company.name}"></h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div th:each="emp : ${employees}" class="bg-white p-4 rounded shadow">
-            <h2 class="text-xl font-semibold" th:text="${emp.name}"></h2>
-            <p class="mt-2">
-                <a th:href="@{'/funcionarios/' + ${emp.id} + '/documentos'}"
-                   class="text-blue-500 hover:underline">Ver documentos</a>
-            </p>
+    <h1 class="text-3xl font-bold text-gray-800 mb-6" th:text="${company.name}"></h1>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="emp : ${employees}" class="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition-shadow duration-200">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-xl font-semibold text-gray-800" th:text="${emp.name}"></h2>
+                <span class="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+                      th:text="${emp.documentCount + ' documentos'}">0 documentos</span>
+            </div>
+
+            <a th:href="@{'/funcionarios/' + ${emp.id} + '/documentos'}"
+               class="inline-block mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium">
+                📄 Ver documentos
+            </a>
         </div>
     </div>
-    <p class="mt-6">
-        <a href="/empresas" class="text-gray-600 hover:underline">← Voltar às empresas</a>
-    </p>
+
+    <div class="mt-8">
+        <a href="/empresas" class="text-sm text-gray-500 hover:underline">← Voltar às empresas</a>
+    </div>
 </main>
+
 <div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>

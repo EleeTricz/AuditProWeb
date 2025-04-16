@@ -29,4 +29,9 @@ public class DocumentServiceImpl implements DocumentService{
     public List<Document> findByEmployeeWithFilters(Long employeeId, Integer year, Integer month, DocumentType type) {
         return repo.findByEmployeeAndFilters(employeeId, year, month, type);
     }
+
+    @Override
+    public Long countByEmployeeId(Long employeeId) {
+        return repo.countByEmployeeId(employeeId);
+    }
 }

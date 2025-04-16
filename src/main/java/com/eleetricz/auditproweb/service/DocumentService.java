@@ -9,4 +9,5 @@ public interface DocumentService {
     List<Document> findByEmployee(Long employeeId);
     Document findById(Long id);
     List<Document> findByEmployeeWithFilters(Long employeeId, Integer year, Integer month, DocumentType type);
+    Long countByEmployeeId(Long employeeId);
 }
