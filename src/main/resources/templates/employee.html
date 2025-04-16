@@ -26,7 +26,9 @@
             <select id="year" name="year" class="border border-gray-300 rounded px-3 py-2 text-sm">
                 <option th:each="year : ${years}"
                         th:value="${year}"
-                        th:text="${year}">
+                        th:text="${year}"
+                        th:selected="${year} == ${yearSelected}"
+                >
                 </option>
             </select>
         </div>
@@ -37,8 +39,8 @@
                 <option th:each="month : ${months}"
                         th:value="${month.number}"
                         th:text="${month.name}"
+                        th:selected="${month.ordinal() + 1} == ${monthSelected}"
                 >
-
                 </option>
             </select>
         </div>
@@ -47,12 +49,17 @@
             <select id="documentType" name="documentType" class="border border-gray-300 rounded px-3 py-2 text-sm">
                 <option th:each="documentType : ${documentTypes}"
                         th:value="${documentType}"
-                        th:text="${documentType}">
+                        th:text="${documentType}"
+                        th:selected="${documentType} == ${typeSelected}"
+                >
                 </option>
             </select>
         </div>
         <button type="submit" class="bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-600">
             Filtrar
+        </button>
+        <button type="button" class="bg-blue-500 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-600" th:onclick="'window.location.href=\'' + @{/funcionarios/{id}/documentos(id=${employee.id})} + '\''">
+            Limpar Filtros
         </button>
     </form>
 

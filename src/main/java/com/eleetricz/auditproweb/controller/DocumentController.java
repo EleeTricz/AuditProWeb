@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,13 +35,19 @@ public class DocumentController {
     }
 
     @GetMapping("/funcionarios/{id}/documentos")
-    public String listDocuments(@PathVariable Long id, Model model) {
+    public String listDocuments(@PathVariable Long id,
+                                @RequestParam(required = false) Integer year,
+                                @RequestParam(required = false) Integer month,
+                                @RequestParam(required = false, name = "documentType") DocumentType type,
+                                Model model) {
         model.addAttribute("employee", employeeService.findById(id));
-        model.addAttribute("documents", documentService.findByEmployee(id));
+        model.addAttribute("documents", documentService.findByEmployeeWithFilters(id, year, month, type));
         model.addAttribute("months", Month.values());
         model.addAttribute("documentTypes", DocumentType.values());
-        List<Integer> years = YearProvider.getYears(2020, 2025);
-        model.addAttribute("years", years);
+        model.addAttribute("years", YearProvider.getYears(2020, 2025));
+        model.addAttribute("yearSelected", year);
+        model.addAttribute("monthSelected", month);
+        model.addAttribute("typeSelected", type);
         return "employee";
     }
 
