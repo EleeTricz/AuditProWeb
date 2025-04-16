@@ -4,6 +4,7 @@ import com.eleetricz.auditproweb.model.DocumentType;
 import com.eleetricz.auditproweb.model.enums.Month;
 import com.eleetricz.auditproweb.service.DocumentService;
 import com.eleetricz.auditproweb.service.EmployeeService;
+import com.eleetricz.auditproweb.service.StorageService;
 import com.eleetricz.auditproweb.utils.YearProvider;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
@@ -28,10 +28,13 @@ import java.util.List;
 public class DocumentController {
     private final DocumentService documentService;
     private final EmployeeService employeeService;
+    private final StorageService storageService;
 
-    public DocumentController(DocumentService documentService, EmployeeService employeeService){
+
+    public DocumentController(DocumentService documentService, EmployeeService employeeService, StorageService storageService) {
         this.documentService = documentService;
         this.employeeService = employeeService;
+        this.storageService = storageService;
     }
 
     @GetMapping("/funcionarios/{id}/documentos")
@@ -51,23 +54,26 @@ public class DocumentController {
         return "employee";
     }
 
-    @GetMapping("/pdf/{empresa}/{nomeArquivo:.+}")
-    public ResponseEntity<Resource> takePdf(
-            @PathVariable String empresa,
-            @PathVariable String nomeArquivo) throws IOException {
-        Path basePath = Paths.get("C:/Users/TERMINAL-3/Desktop/PROJETO_AUDITORIA/PROJETO_AUDITORIA_PDFS");
-        Path filePath = basePath.resolve(empresa).resolve(nomeArquivo);
+    @GetMapping("/pdf/{company}/{fileName:.+}")
+    public ResponseEntity<Resource> getPdf(
+            @PathVariable String company,
+            @PathVariable String fileName) {
+        try {
+            Resource resource = storageService.loadPdf(company, fileName);
 
-        if (!Files.exists(filePath)) {
-            return ResponseEntity.notFound().build();
+            if (resource == null || !resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
         }
-
-        Resource resource = new UrlResource(filePath.toUri());
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
     }
 
 
