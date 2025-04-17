@@ -5,23 +5,29 @@
     <title>Empresas</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
+
 <!-- Cabeçalho -->
 <div th:replace="fragments/header :: header"></div>
 
 <!-- Conteúdo Principal -->
 <main class="container mx-auto p-6 flex-1">
-    <h1 class="text-3xl font-bold mb-4">Empresas</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div th:each="company : ${companies}" class="bg-white p-4 rounded shadow hover:shadow-lg">
-            <h2 class="text-xl font-semibold" th:text="${company.name}"></h2>
-            <a th:href="@{'/empresas/' + ${company.id} + '/funcionarios'}"
-               class="mt-2 inline-block text-blue-500 hover:underline">Ver funcionários</a>
+    <h1 class="text-3xl font-semibold text-gray-800 mb-6">Empresas</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="company : ${companies}" class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <a th:href="@{'/empresas/' + ${company.id} + '/dashboard'}" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors duration-300">
+                <h2 class="text-xl font-semibold text-gray-800" th:text="${company.name}"></h2>
+                <p class="text-sm text-gray-500 mt-2">Acesse o painel de controle da empresa.</p>
+            </a>
+            <a th:href="@{'/empresas/' + ${company.id} + '/funcionarios'}" class="mt-3 inline-block text-blue-600 hover:underline transition-colors duration-300">
+                Ver funcionários
+            </a>
         </div>
     </div>
 </main>
 
 <!-- Rodapé -->
 <div th:replace="fragments/footer :: footer"></div>
+
 </body>
 </html>

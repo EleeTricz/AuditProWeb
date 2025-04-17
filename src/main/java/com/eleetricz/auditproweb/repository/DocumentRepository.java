@@ -1,7 +1,9 @@
 package com.eleetricz.auditproweb.repository;
 
+import com.eleetricz.auditproweb.model.Company;
 import com.eleetricz.auditproweb.model.Document;
 import com.eleetricz.auditproweb.model.DocumentType;
+import com.eleetricz.auditproweb.model.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,8 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                                             @Param("month") Integer month,
                                             @Param("type")DocumentType type);
     Long countByEmployeeId(Long employeeId);
+    List<Document> findByCompanyId(Long companyId);
+    boolean existsByCompanyAndEmployeeAndYearAndMonthAndType(Company company, Employee employee, int year, int month, DocumentType type);
+    boolean existsByCompanyAndEmployeeIsNullAndYearAndMonthAndType(Company company, int year, int month, DocumentType type);
+
 }
