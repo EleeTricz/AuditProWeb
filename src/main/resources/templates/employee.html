@@ -72,10 +72,17 @@
                       class="text-gray-800 text-sm font-medium"></span>
 
                 <!-- Botão de download -->
-                <a th:href="@{'/pdf/' + ${document.company.name} + '/' + ${document.employee.name + '_' + document.year + '_' + (document.month < 10 ? '0' + document.month : document.month) + '_' + document.type + '.pdf'}}"
+                <a th:href="@{/download-link(
+        company=${document.company.name},
+        employee=${document.employee.name},
+        year=${document.year},
+        month=${document.month},
+        type=${document.type}
+    )}"
                    target="_blank"
                    class="flex items-center gap-1 text-blue-500 hover:underline text-sm font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v8m0 0l-4-4m4 4l4-4M4 4h16v4H4V4z"/>

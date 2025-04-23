@@ -2,6 +2,7 @@ package com.eleetricz.auditproweb.controller;
 
 import com.eleetricz.auditproweb.model.DocumentType;
 import com.eleetricz.auditproweb.model.enums.Month;
+import com.eleetricz.auditproweb.service.BackblazeService;
 import com.eleetricz.auditproweb.service.DocumentService;
 import com.eleetricz.auditproweb.service.EmployeeService;
 import com.eleetricz.auditproweb.service.StorageService;
@@ -16,8 +17,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,12 +33,14 @@ public class DocumentController {
     private final DocumentService documentService;
     private final EmployeeService employeeService;
     private final StorageService storageService;
+    private final BackblazeService backblazeService;
 
 
-    public DocumentController(DocumentService documentService, EmployeeService employeeService, StorageService storageService) {
+    public DocumentController(DocumentService documentService, EmployeeService employeeService, StorageService storageService, BackblazeService backblazeService) {
         this.documentService = documentService;
         this.employeeService = employeeService;
         this.storageService = storageService;
+        this.backblazeService = backblazeService;
     }
 
     @GetMapping("/funcionarios/{id}/documentos")
@@ -51,6 +57,7 @@ public class DocumentController {
         model.addAttribute("yearSelected", year);
         model.addAttribute("monthSelected", month);
         model.addAttribute("typeSelected", type);
+
         return "employee";
     }
 
@@ -75,6 +82,43 @@ public class DocumentController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+@GetMapping("/download-link")
+public String generateDownloadLink(
+        @RequestParam String company,
+        @RequestParam String employee,
+        @RequestParam int year,
+        @RequestParam int month,
+        @RequestParam String type,
+        RedirectAttributes redirectAttributes) {
+    try {
+        String fileName = String.format(
+                "PROJETO_AUDITORIA_PDFS/%s/%s/%s_%d_%02d_%s.pdf",
+                company,
+                employee.toUpperCase(),
+                employee.toUpperCase(),
+                year,
+                month,
+                type.toUpperCase()
+        );
+
+        String url = backblazeService.generateDownloadUrl(fileName);
+        return "redirect:" + url;
+
+    } catch (Exception e) {
+        String errorMessage = e.getMessage();
+        return "redirect:/documentos/erro?mensagem=" + java.net.URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+    }
+}
+
+    @GetMapping("/documentos/erro")
+    public String erro(@RequestParam String mensagem, Model model) {
+        model.addAttribute("mensagem", mensagem);
+        return "documentErro";
+    }
+
+
+
 
 
 
