@@ -23,6 +23,5 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     Long countByEmployeeId(Long employeeId);
     List<Document> findByCompanyId(Long companyId);
     boolean existsByCompanyAndEmployeeAndYearAndMonthAndType(Company company, Employee employee, int year, int month, DocumentType type);
-    boolean existsByCompanyAndEmployeeIsNullAndYearAndMonthAndType(Company company, int year, int month, DocumentType type);
-
+    long countByCompany(Company company);
 }

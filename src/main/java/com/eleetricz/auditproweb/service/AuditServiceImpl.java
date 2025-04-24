@@ -48,6 +48,7 @@ public class AuditServiceImpl implements AuditService {
     @Override
     public Map<String, List<String>> listMissingDocumentsByEmployee(Company company) {
         List<Employee> employees = employeeRepo.findByCompanyId(company.getId());
+        employees.removeIf(employee -> "TODOS".equalsIgnoreCase(employee.getName()));
         List<int[]> months = generateMonthInterval();
         Map<String, List<String>> missing = new HashMap<>();
 
@@ -93,22 +94,49 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public List<String> listMissingFolhaByCompany(Company company) {
-
-
         List<int[]> months = generateMonthInterval();
         List<String> missingFolhas = new ArrayList<>();
+
+        // Busca o funcionário "TODOS" da empresa
+        Employee todos = employeeRepo.findByCompanyAndNameIgnoreCase(company, "TODOS");
+
+        // Buscar a data de admissão mais antiga (excluindo o "TODOS")
+        LocalDate admissionDate = employeeRepo.findOldestAdmissionDateExcludingTodos(company)
+                .orElse(LocalDate.of(2020, 1, 1)); // fallback se nenhum funcionário com admissão
+
+        if (todos == null) {
+            // Se não existir, todos os documentos são considerados faltantes
+            for (int[] ym : months) {
+                int year = ym[0];
+                int month = ym[1];
+
+                LocalDate competencia = LocalDate.of(year, month, 1);
+
+                if (competencia.isBefore(admissionDate)) continue;
+
+                missingFolhas.add(String.format("%02d/%d - FOLHA", month, year));
+                if (month == 11 || month == 12) {
+                    missingFolhas.add(String.format("%02d/%d - FOLHA13", month, year));
+                }
+            }
+            return missingFolhas;
+        }
 
         for (int[] ym : months) {
             int year = ym[0];
             int month = ym[1];
 
-            boolean hasFolha = documentRepo.existsByCompanyAndEmployeeIsNullAndYearAndMonthAndType(company, year, month, DocumentType.FOLHA);
+            LocalDate competencia = LocalDate.of(year, month, 1);
+
+            if (competencia.isBefore(admissionDate)) continue;
+
+            boolean hasFolha = documentRepo.existsByCompanyAndEmployeeAndYearAndMonthAndType(company, todos, year, month, DocumentType.FOLHA);
             if (!hasFolha) {
                 missingFolhas.add(String.format("%02d/%d - FOLHA", month, year));
             }
 
             if (month == 11 || month == 12) {
-                boolean hasFolha13 = documentRepo.existsByCompanyAndEmployeeIsNullAndYearAndMonthAndType(company, year, month, DocumentType.FOLHA13);
+                boolean hasFolha13 = documentRepo.existsByCompanyAndEmployeeAndYearAndMonthAndType(company, todos, year, month, DocumentType.FOLHA13);
                 if (!hasFolha13) {
                     missingFolhas.add(String.format("%02d/%d - FOLHA13", month, year));
                 }
@@ -117,6 +145,7 @@ public class AuditServiceImpl implements AuditService {
 
         return missingFolhas;
     }
+
 
     @Override
     public Map<String, Double> calculatePresencePercentageByEmployee(Company company) {
@@ -176,24 +205,39 @@ public class AuditServiceImpl implements AuditService {
         int expected = 0;
         int found = 0;
 
+        // Busca o funcionário "TODOS" da empresa
+        Employee todos = employeeRepo.findByCompanyAndNameIgnoreCase(company, "TODOS");
+        if (todos == null) {
+            // Se não existir, nenhum documento pode ser encontrado
+            return 0.0;
+        }
+
+        // Buscar a data de admissão mais antiga (excluindo o "TODOS")
+        LocalDate admissionDate = employeeRepo.findOldestAdmissionDateExcludingTodos(company)
+                .orElse(LocalDate.of(2020, 1, 1)); // fallback se nenhum funcionário com admissão
+
+
         for (int[] ym : months) {
             int year = ym[0];
             int month = ym[1];
 
-            // FOLHA é sempre esperada
+            LocalDate competencia = LocalDate.of(year, month, 1);
+            if (competencia.isBefore(admissionDate)) {
+                continue;
+            }
+
             expected++;
-            boolean hasFolha = documentRepo.existsByCompanyAndEmployeeIsNullAndYearAndMonthAndType(
-                    company, year, month, DocumentType.FOLHA
+            boolean hasFolha = documentRepo.existsByCompanyAndEmployeeAndYearAndMonthAndType(
+                    company, todos, year, month, DocumentType.FOLHA
             );
             if (hasFolha) {
                 found++;
             }
 
-            // FOLHA13 esperada nos meses 11 e 12
             if (month == 11 || month == 12) {
                 expected++;
-                boolean hasFolha13 = documentRepo.existsByCompanyAndEmployeeIsNullAndYearAndMonthAndType(
-                        company, year, month, DocumentType.FOLHA13
+                boolean hasFolha13 = documentRepo.existsByCompanyAndEmployeeAndYearAndMonthAndType(
+                        company, todos, year, month, DocumentType.FOLHA13
                 );
                 if (hasFolha13) {
                     found++;
@@ -207,6 +251,7 @@ public class AuditServiceImpl implements AuditService {
 
 
 
+
     @Override
     public List<AuditResume> getAuditResumeByEmployee(Company company) {
         Map<String, Double> porcentagens = calculatePresencePercentageByEmployee(company);
@@ -214,13 +259,28 @@ public class AuditServiceImpl implements AuditService {
 
         List<AuditResume> resumo = new ArrayList<>();
 
-        for (String funcionario : porcentagens.keySet()) {
-            double porcentagem = porcentagens.getOrDefault(funcionario, 0.0);
-            List<String> faltando = faltantes.getOrDefault(funcionario, List.of());
-            resumo.add(new AuditResume(funcionario, porcentagem, faltando));
+        for (Employee emp : employeeRepo.findByCompanyId(company.getId())) {
+            if ("TODOS".equalsIgnoreCase(emp.getName())) continue;
+
+            double porcentagem = porcentagens.getOrDefault(emp.getName(), 0.0);
+            List<String> faltando = faltantes.getOrDefault(emp.getName(), List.of());
+            resumo.add(new AuditResume(emp.getId(), emp.getName(), porcentagem, faltando));
         }
 
         return resumo;
     }
+
+    @Override
+    public int countEmployeesByCompany(Company company) {
+        return employeeRepo.countByCompany(company);
+    }
+
+    @Override
+    public long countDocumentsByCompany(Company company) {
+        return documentRepo.countByCompany(company);
+    }
+
+
+
 
 }

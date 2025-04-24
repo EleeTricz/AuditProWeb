@@ -14,7 +14,8 @@ public interface AuditService {
     Map<String, Double> calculatePresencePercentageByEmployee(Company company);
     double calculateFolhaPercentageByCompany(Company company);
     List<AuditResume> getAuditResumeByEmployee(Company company);
-
+    int countEmployeesByCompany(Company company);
+    long countDocumentsByCompany(Company company);
 
 
 }

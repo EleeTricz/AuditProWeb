@@ -31,10 +31,15 @@ public class AuditController {
         List<AuditResume> resumoFuncionarios = auditService.getAuditResumeByEmployee(company);
         List<String> missingFolha = auditService.listMissingFolhaByCompany(company);
 
-        model.addAttribute("company", company.getName());
+        int quantidadeFuncionarios = auditService.countEmployeesByCompany(company) -1;
+        long quantidadeDocumentos = auditService.countDocumentsByCompany(company);
+
+        model.addAttribute("company", company);
         model.addAttribute("folhaPercentage", folhaPercentage);
         model.addAttribute("resumoFuncionarios", resumoFuncionarios);
         model.addAttribute("missingFolha", missingFolha);
+        model.addAttribute("quantidadeFuncionarios", quantidadeFuncionarios);
+        model.addAttribute("quantidadeDocumentos", quantidadeDocumentos);
 
         return "dashboard";
     }

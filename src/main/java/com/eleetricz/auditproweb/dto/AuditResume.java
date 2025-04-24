@@ -6,13 +6,14 @@ import java.util.List;
 
 @Getter
 public class AuditResume {
-
+    private final Long id;
     private final String name;
     private final double percentage;
     private final List<String> missingDocuments;
     private final String colorClass;
 
-    public AuditResume(String name, double percentage, List<String> missingDocuments) {
+    public AuditResume(Long id, String name, double percentage, List<String> missingDocuments) {
+        this.id = id;
         this.name = name;
         this.percentage = percentage;
         this.missingDocuments = missingDocuments;
@@ -25,4 +26,6 @@ public class AuditResume {
             this.colorClass = "bg-red-100 text-red-700";
         }
     }
+
+
 }
