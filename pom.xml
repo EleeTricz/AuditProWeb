@@ -87,6 +87,12 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+		<!-- H2 pra demo -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
 
 
