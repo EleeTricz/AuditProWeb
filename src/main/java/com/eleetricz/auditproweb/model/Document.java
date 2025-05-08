@@ -25,7 +25,9 @@ public class Document {
     @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     private DocumentType type;
 
+    @Column(name = "doc_year")
     private int year;
+
     @Column(name = "doc_month")
     private int month;
 
