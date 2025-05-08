@@ -22,6 +22,7 @@ public class Document {
     private Company company;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DocumentType type;
 
     private int year;
