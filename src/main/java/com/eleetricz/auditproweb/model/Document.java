@@ -26,6 +26,7 @@ public class Document {
     private DocumentType type;
 
     private int year;
+    @Column(name = "doc_month")
     private int month;
 
 }
