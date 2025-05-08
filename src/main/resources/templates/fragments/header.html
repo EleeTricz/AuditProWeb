@@ -6,6 +6,9 @@
     <div class="container mx-auto">
         <a href="/empresas" class="font-bold text-xl">Auditoria Docs</a>
     </div>
+    <div th:if="${@environment.acceptsProfiles('demo')}" class="bg-yellow-300 text-black text-center p-2 font-semibold">
+        🔍 Esta é uma versão DEMO com dados fictícios. Alguns recursos podem estar limitados.
+    </div>
 </nav>
 </body>
 </html>
