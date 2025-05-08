@@ -2,11 +2,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<nav class="bg-blue-600 p-4 text-white" th:fragment="header">
-    <div class="container mx-auto">
-        <a href="/empresas" class="font-bold text-xl">Auditoria Docs</a>
+<nav th:fragment="header" class="bg-blue-600 text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <a href="/empresas" class="text-2xl font-semibold hover:text-blue-200 transition-colors">
+            📁 Auditoria Docs
+        </a>
     </div>
-    <div th:if="${@environment.acceptsProfiles('demo')}" class="bg-yellow-300 text-black text-center p-2 font-semibold">
+
+    <div th:if="${@environment.acceptsProfiles('demo')}"
+         class="bg-yellow-400 text-black text-sm text-center font-medium py-2 animate-pulse">
         🔍 Esta é uma versão DEMO com dados fictícios. Alguns recursos podem estar limitados.
     </div>
 </nav>
