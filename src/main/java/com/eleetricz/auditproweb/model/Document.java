@@ -22,7 +22,7 @@ public class Document {
     private Company company;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20)")
     private DocumentType type;
 
     private int year;
